@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { Alert, StyleSheet, Text, View, SafeAreaView, Button, Image} from 'react-native';
-import { Camera, CameraView } from 'expo-camera';
+import { Alert, StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity} from 'react-native';
+import { Camera, CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import React, { useState, useEffect, useRef } from 'react';
@@ -10,6 +10,7 @@ export default function App() {
   const cameraRef = useRef()
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
+  const [facing, setFacing] = useState('back');
 
   const [photo, setPhoto] = useState();
 
@@ -28,6 +29,10 @@ export default function App() {
     return <Text>Permission for camera not granted. Please change this in settings</Text>
   }
 
+
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
 
   let takePic = async () => {
     let options = {
@@ -65,12 +70,17 @@ export default function App() {
   }
 
   return (
-    <CameraView style={styles.container} ref = {cameraRef}>
+    <CameraView style={styles.container} facing={facing} ref={cameraRef}>
       <View style={styles.buttonContainer}>
-        <Button title="Take Picture" onPress={takePic} />
+        <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+          <Text style={styles.text}>Flip Camera</Text>
+        </TouchableOpacity>
       </View>
-      <StatusBar style="auto" />
+      <View style={styles.buttonContainer}>
+          <Button title="Take Picture" onPress={takePic} />
+      </View>
     </CameraView>
+    
   );
 }
 
